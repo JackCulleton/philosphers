@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validate.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jculleto <jculleto@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jackculleton <jackculleton@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 17:38:48 by jculleto          #+#    #+#             */
-/*   Updated: 2026/06/11 17:38:48 by jculleto         ###   ########.fr       */
+/*   Updated: 2026/06/12 18:27:50 by jackculleto      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,26 @@ static int	init_philos(t_sim *sim, int argc, char **argv)
 	return (1);
 }
 
+static void	cleanup_sim(t_sim *sim)
+{
+	int	i;
+
+	i = 0;
+	while (i < sim->amount)
+	{
+		pthread_mutex_destroy(&sim->philos[i].meal_mutex);
+		i++;
+	}
+	pthread_mutex_destroy(&sim->print_mutex);
+	pthread_mutex_destroy(&sim->dead->dead);
+	pthread_mutex_destroy(&sim->meal_check->meal_counter);
+	pthread_mutex_destroy(sim->monitor->lock);
+	free(sim->philos);
+	free_monitor(sim);
+	free(sim->meal_check);
+	free(sim->dead);
+}
+
 int	validate(int argc, char **argv)
 {
 	t_sim	sim;
@@ -77,5 +97,6 @@ int	validate(int argc, char **argv)
 		return (0);
 	}
 	init_thread(sim.philos, sim.amount);
+	cleanup_sim(&sim);
 	return (1);
 }
